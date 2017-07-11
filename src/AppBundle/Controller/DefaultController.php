@@ -139,23 +139,25 @@ class DefaultController extends Controller
     {
         $taskToEdit = $em->getRepository('AppBundle:todoList')->find($id);
 
-        $currentTitle = $taskToEdit->getTitle();
-        $currentContent = $taskToEdit->getContent();
+        $title = $request->request->get('title');
+        $content = $request->request->get('content');
 
 
-        if($request->request->get('title') == ""){
-
-        }
-
-        if($request->request->get('content') == ""){
-
-        }
+        $taskToEdit->setTitle($title);
+        $taskToEdit->setContent($content);
 
 
+        $em->persist($taskToEdit);
+        $em->flush();
 
 
+        $myArray = [
+            "response" => "ok",
+        ];
 
-
+        $response = new Response(json_encode($myArray));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
 
     }
 
