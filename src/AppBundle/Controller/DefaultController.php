@@ -103,15 +103,67 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/deleteTask", name="deleteTask")
+     * @Route("/deleteTask/{id}", name="deleteTask")
      */
-    public function deleteTaskAction(Request $request)
+    public function deleteTaskAction(Request $request, EntityManager $em, $id)
     {
+        $taskToDelete = $em->getRepository('AppBundle:todoList')->find($id);
+
+        if($taskToDelete != null){
+            $em->remove($taskToDelete);
+            $em->flush();
+
+            $myArray = [
+                "response" => "ok",
+            ];
+            $response = new Response(json_encode($myArray));
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+
+        }else{
+            $myArray = [
+                "response" => "erreur delete task",
+            ];
+            $response = new Response(json_encode($myArray));
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+
+    }
+
+
+    /**
+     * @Route("/editTask/{id}", name="editTask")
+     */
+    public function editTaskAction(Request $request, EntityManager $em, $id)
+    {
+        $taskToEdit = $em->getRepository('AppBundle:todoList')->find($id);
+
+        $currentTitle = $taskToEdit->getTitle();
+        $currentContent = $taskToEdit->getContent();
+
+
+        if($request->request->get('title') == ""){
+
+        }
+
+        if($request->request->get('content') == ""){
+
+        }
+
+
+
+
+
 
 
     }
 
-    
+
+
+
+
+
 
 
     /**
