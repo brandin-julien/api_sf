@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\todoList;
 use AppBundle\Entity\User;
+use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,7 @@ class DefaultController extends Controller
     {
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+            'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
         ]);
     }
 
@@ -35,7 +36,7 @@ class DefaultController extends Controller
 
         $user = $em->getRepository('AppBundle:User')->findByUsername($username);
 
-        if($user == null){
+        if ($user == null) {
             $user = new User();
             $user->setUsername($username);
             $em->persist($user);
@@ -46,7 +47,7 @@ class DefaultController extends Controller
 
         $allTodo = [];
 
-        foreach ($todoList as $todo){
+        foreach ($todoList as $todo) {
             $array = [
                 "title" => $todo->getTitle(),
                 "content" => $todo->getContent(),
@@ -108,12 +109,50 @@ class DefaultController extends Controller
     {
 
 
-
-
-
     }
 
+    
 
+
+    /**
+     * @Route("/getTasks/{username}", name="getTasks")
+     */
+
+    public function getTasksByUserAction($username, EntityManager $em)
+
+    {
+        $userCurrent = $em->getRepository('AppBundle:User')->findOneBy(array(
+            'username' => $username
+        ));
+
+
+        $todoList = $em->getRepository('AppBundle:todoList')->findByUser($userCurrent);
+
+        $allTodo = [];
+
+        foreach ($todoList as $todo) {
+            $array = [
+                "title" => $todo->getTitle(),
+                "content" => $todo->getContent(),
+                "id" => $todo->getId(),
+            ];
+
+            array_push($allTodo, $array);
+        }
+
+        $myArray = [
+            "response" => "ok",
+            "information" => $allTodo
+        ];
+
+        //return $this->render('index.html.twig', array('todoList' => $myArray));
+
+
+        $response = new Response(json_encode($myArray));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+
+    }
 
 
 }
