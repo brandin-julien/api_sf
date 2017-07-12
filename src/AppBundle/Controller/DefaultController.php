@@ -179,9 +179,9 @@ class DefaultController extends Controller
 
         foreach ($todoList as $todo) {
             $em->remove($todo);
+            $em->flush();
 
         }
-        $em->flush();
 
 
 
