@@ -169,6 +169,29 @@ class DefaultController extends Controller
 
 
 
+    /**
+     * @Route("/deleteTasks/{username}")
+     */
+    public function deleteTasks(Request $request, EntityManager $em, $username)
+    {
+
+        $todoList = $em->getRepository('AppBundle:todoList')->findByUser($username);
+
+        foreach ($todoList as $todo) {
+            $em->remove($todo);
+
+        }
+
+
+        $myArray = [
+            "response" => "ok",
+        ];
+
+        $response = new Response(json_encode($myArray));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+
+    }
 
 
 
