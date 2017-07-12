@@ -181,6 +181,8 @@ class DefaultController extends Controller
             $em->remove($todo);
 
         }
+        $em->flush();
+
 
 
         $myArray = [
